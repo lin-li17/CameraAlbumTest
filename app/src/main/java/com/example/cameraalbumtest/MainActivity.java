@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int TAKE_PHOTO = 1;
     private ImageView picture;
     private Uri imageUri;
-
+    public static final int CHOOSE_PHOTO = 2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +64,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, TAKE_PHOTO);
             }
         });
+        Button button1 = findViewById(R.id.button2);
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //打开文件选择器
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                //指定只显示图片
+                intent.setType("image/*");
+                startActivityForResult(intent,CHOOSE_PHOTO);
+            }
+        });
     }
 
     @Override
@@ -80,6 +92,19 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case CHOOSE_PHOTO:
+                if (resultCode == RESULT_OK && data != null){
+                    if (data.getData() != null){
+                        Uri uri = data.getData();
+                        //将选择的图片显示
+                        try {
+                            Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(uri));
+                            picture.setImageBitmap(bitmap);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             default:
                 break;
         }
